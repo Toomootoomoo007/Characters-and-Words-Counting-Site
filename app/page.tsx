@@ -1,81 +1,16 @@
 "use client";
-import Image from "next/image";
+import { countFuncs } from "@/libs/countFuncs";
 import { useState } from "react";
 
-const initialCountings = {
-  allLength: 0,
-  noSpacesLength: 0,
-  fullWidthLength: 0,
-  halfWidthKanaLength: 0,
-  fullAndHalfKanaLength: 0,
-  halfWidthAllnumLength: 0,
-  numLength: 0,
-  fullWidthDigitsLength: 0,
-  fullWidthAlphaLength: 0,
-  halfWidthAlnumWords: 0,
-  numberWords: 0,
-  specialCharLength: 0,
-};
+const initialLetters = "ここに文字を入れてください！";
 
 export default function Home() {
-  const [charCount, setCharCount] = useState(initialCountings);
+  const [charCount, setCharCount] = useState(countFuncs(initialLetters));
 
   const counting = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    const newCountings = { ...initialCountings };
     const text = event.target.value;
 
-    //生の長さ
-    newCountings.allLength = text.length;
-
-    // スペースや改行を削除
-    newCountings.noSpacesLength = text.replace(/\s/g, "").length;
-
-    // 全角文字数
-    newCountings.fullWidthLength = (text.match(/[^\x00-\x7F]/g) || []).length;
-
-    // 半角カタカナ文字数
-    newCountings.halfWidthKanaLength = (
-      text.match(/[\uFF61-\uFF9F]/g) || []
-    ).length;
-
-    //全角文字数と半角カタカナ文字数
-    newCountings.fullAndHalfKanaLength =
-      newCountings.fullWidthLength + newCountings.halfWidthKanaLength;
-
-    // 半角英数字文字数
-    newCountings.halfWidthAllnumLength = (
-      text.match(/[a-zA-Z0-9]/g) || []
-    ).length;
-
-    // 半角英数字の単語数
-    newCountings.halfWidthAlnumWords = (
-      text.match(/\b[a-zA-Z0-9]+\b/g) || []
-    ).length;
-
-    //半角数字数
-    newCountings.numLength = (text.match(/[0-9]/g) || []).length;
-
-    // 全角数字文字数
-    newCountings.fullWidthDigitsLength = (
-      text.match(/[\uFF10-\uFF19]/g) || []
-    ).length;
-
-    // 全角英語文字数
-    newCountings.fullWidthAlphaLength = (
-      text.match(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g) || []
-    ).length;
-
-    // 数字の単語数
-    newCountings.numberWords = (text.match(/\b\d+\b/g) || []).length;
-
-    //特殊文字の数
-    newCountings.specialCharLength = (
-      text.match(
-        /[^a-zA-Z0-9\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF10-\uFF19]/g
-      ) || []
-    ).length;
-
-    setCharCount(newCountings);
+    setCharCount(countFuncs(text));
   };
 
   const copyToClipboard = async () => {
@@ -95,6 +30,7 @@ export default function Home() {
             className="w-4/5 p-3 text-xl bg-slate-500 text-neutral-50"
             rows={10}
             onChange={counting}
+            placeholder={initialLetters}
           />
           <div className="flex gap-2">
             <input
@@ -102,7 +38,7 @@ export default function Home() {
               value={"リセット"}
               className="inline-block text-xl px-4 py-2 cursor-pointer bg-blue-900 text-neutral-200 rounded-md"
               onClick={() => {
-                setCharCount(initialCountings);
+                setCharCount(countFuncs(initialLetters));
               }}
             />
             <button
@@ -135,7 +71,8 @@ export default function Home() {
         <p className="text-xl">
           全角文字と半角カタカナ：{charCount.fullWidthLength}
           文字(内、半角カタカナ：{charCount.halfWidthKanaLength}文字、全角数字：
-          {charCount.fullWidthDigitsLength}文字)
+          {charCount.fullWidthDigitsLength}文字、全角特殊文字：
+          {charCount.fullWidthSpecialCharLength}文字)
         </p>
       </section>
     </main>
