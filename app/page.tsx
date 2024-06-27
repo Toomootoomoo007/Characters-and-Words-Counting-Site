@@ -1,113 +1,143 @@
+"use client";
 import Image from "next/image";
+import { useState } from "react";
+
+const initialCountings = {
+  allLength: 0,
+  noSpacesLength: 0,
+  fullWidthLength: 0,
+  halfWidthKanaLength: 0,
+  fullAndHalfKanaLength: 0,
+  halfWidthAllnumLength: 0,
+  numLength: 0,
+  fullWidthDigitsLength: 0,
+  fullWidthAlphaLength: 0,
+  halfWidthAlnumWords: 0,
+  numberWords: 0,
+  specialCharLength: 0,
+};
 
 export default function Home() {
+  const [charCount, setCharCount] = useState(initialCountings);
+
+  const counting = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    const newCountings = { ...initialCountings };
+    const text = event.target.value;
+
+    //生の長さ
+    newCountings.allLength = text.length;
+
+    // スペースや改行を削除
+    newCountings.noSpacesLength = text.replace(/\s/g, "").length;
+
+    // 全角文字数
+    newCountings.fullWidthLength = (text.match(/[^\x00-\x7F]/g) || []).length;
+
+    // 半角カタカナ文字数
+    newCountings.halfWidthKanaLength = (
+      text.match(/[\uFF61-\uFF9F]/g) || []
+    ).length;
+
+    //全角文字数と半角カタカナ文字数
+    newCountings.fullAndHalfKanaLength =
+      newCountings.fullWidthLength + newCountings.halfWidthKanaLength;
+
+    // 半角英数字文字数
+    newCountings.halfWidthAllnumLength = (
+      text.match(/[a-zA-Z0-9]/g) || []
+    ).length;
+
+    // 半角英数字の単語数
+    newCountings.halfWidthAlnumWords = (
+      text.match(/\b[a-zA-Z0-9]+\b/g) || []
+    ).length;
+
+    //半角数字数
+    newCountings.numLength = (text.match(/[0-9]/g) || []).length;
+
+    // 全角数字文字数
+    newCountings.fullWidthDigitsLength = (
+      text.match(/[\uFF10-\uFF19]/g) || []
+    ).length;
+
+    // 全角英語文字数
+    newCountings.fullWidthAlphaLength = (
+      text.match(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g) || []
+    ).length;
+
+    // 数字の単語数
+    newCountings.numberWords = (text.match(/\b\d+\b/g) || []).length;
+
+    //特殊文字の数
+    newCountings.specialCharLength = (
+      text.match(
+        /[^a-zA-Z0-9\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF10-\uFF19]/g
+      ) || []
+    ).length;
+
+    setCharCount(newCountings);
+  };
+
+  const copyToClipboard = async () => {
+    const textarea = document.querySelector("#textarea") as HTMLTextAreaElement;
+    const text: string = textarea.value || "";
+    await navigator.clipboard.writeText(text);
+    alert("コピーしたよ!");
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+    <main>
+      <section className="min-h-screen p-7">
+        <h1 className="text-3xl">文字／単語カウント</h1>
+        <form action="/" className="p-5">
+          <textarea
+            id="textarea"
+            className="w-4/5 p-3 text-xl bg-slate-500 text-neutral-50"
+            rows={10}
+            onChange={counting}
+          />
+          <div className="flex gap-2">
+            <input
+              type="reset"
+              value={"リセット"}
+              className="inline-block text-xl px-4 py-2 cursor-pointer bg-blue-900 text-neutral-200 rounded-md"
+              onClick={() => {
+                setCharCount(initialCountings);
+              }}
             />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+            <button
+              type="button"
+              className="inline-block text-xl px-4 py-2 cursor-pointer bg-blue-900 text-neutral-200 rounded-md"
+              onClick={copyToClipboard}
+            >
+              コピー
+            </button>
+          </div>
+        </form>
+        <p className="text-xl">
+          {charCount.allLength}文字（スペース・改行・その他特殊文字含む）
+        </p>
+        <p className="text-xl">
+          {charCount.noSpacesLength}文字（スペース・改行含まない）
+        </p>
+        <p className="text-xl">
+          半角英数字の文字数：{charCount.halfWidthAllnumLength}文字（内、数字
+          {charCount.numLength}文字）
+        </p>
+        <p className="text-xl">
+          特殊文字の文字数：{charCount.specialCharLength}文字
+        </p>
+        <p className="text-xl">
+          半角英数字の単語数：{charCount.halfWidthAlnumWords}
+          単語（内、数字の単語数は
+          {charCount.numberWords}単語）
+        </p>
+        <p className="text-xl">
+          全角文字と半角カタカナ：{charCount.fullWidthLength}
+          文字(内、半角カタカナ：{charCount.halfWidthKanaLength}文字、全角数字：
+          {charCount.fullWidthDigitsLength}文字)
+        </p>
+      </section>
     </main>
   );
 }
