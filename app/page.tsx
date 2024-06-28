@@ -2,7 +2,8 @@
 import { countFuncs } from "@/libs/countFuncs";
 import { useState } from "react";
 
-const initialLetters = "ここに文字を入れてください！";
+const initialLetters =
+  "ここに「文字」を入れたら、カウントするよ🧜‍♀️ Type here, then count them all🥷 Escriba aquí, y se contarán👩🏻‍💻";
 
 export default function Home() {
   const [charCount, setCharCount] = useState(countFuncs(initialLetters));
@@ -51,37 +52,82 @@ export default function Home() {
           </div>
         </form>
         <div className="mt-6">
-          <p className="mt-2">
-            半角英数字の単語数：{charCount.halfWidthAlnumWords}
-            単語（内、数字の単語数は
-            {charCount.numberWords}単語）
-          </p>
+          <dl className="mt-2 grid grid-cols-[1fr_3fr] gap-y-3">
+            <dt>半角英数字の単語数：</dt>
+            <dd>
+              <span className="text-2xl">{charCount.halfWidthAlnumWords}</span>
+              単語（内、数字の単語数は
+              {charCount.numberWords}単語）
+            </dd>
+          </dl>
 
           <div className="mt-2">
-            <h2 className="text-xl font-bold">文字数</h2>
-            <p className="mt-2">全文字数：{charCount.allLength}文字</p>
-            <p className="mt-2">
-              スペース・改行を除く：{charCount.noSpacesLength}文字
-            </p>
-            <p className="mt-2">
-              全角文字と半角カタカナのみ：{charCount.fullWidthLength}文字
-              <br />
-              ▻半角カタカナ：{charCount.halfWidthKanaLength}文字
-              <br />
-              ▻全角数字：{charCount.fullWidthDigitsLength}文字
-              <br />
-              ▻全角特殊文字：{charCount.fullWidthSpecialCharLength}文字
-            </p>
-            <p className="mt-2">
-              半角英数字：{charCount.halfWidthAllnumLength}文字
-              <br />
-              ▻数字{charCount.numLength}文字）
-            </p>
-            <p className="mt-2">
-              特殊文字：{charCount.specialCharLength}文字
-              <br />
-              ▻全角特殊文字：{charCount.fullWidthSpecialCharLength}文字
-            </p>
+            <dl className="grid grid-cols-[1fr_3fr] gap-y-3">
+              <dt className="text-xl font-bold col-span-2">
+                文字数{" "}
+                <small className="text-sm">
+                  *絵文字は２文字としてカウントされます。
+                </small>
+              </dt>
+              <dd className="mt-2">全文字数：</dd>
+              <dd>
+                <span className="text-2xl">{charCount.allLength}</span>文字
+              </dd>
+              <dd className="mt-2">スペース・改行を除く：</dd>
+              <dd>
+                <span className="text-2xl">{charCount.noSpacesLength}</span>
+                文字
+              </dd>
+              <dd className="mt-2">全角文字と半角カタカナのみ：</dd>
+              <dd>
+                <span className="text-2xl">{charCount.fullWidthLength}</span>
+                文字
+              </dd>
+              <dd className="pl-3">▻半角カタカナ：</dd>
+              <dd>
+                <span className="text-2xl">
+                  {charCount.halfWidthKanaLength}
+                </span>
+                文字
+              </dd>
+              <dd className="pl-3">▻全角数字：</dd>
+              <dd>
+                <span className="text-2xl">
+                  {charCount.fullWidthDigitsLength}
+                </span>
+                文字
+              </dd>
+              <dd className="pl-3">▻全角特殊文字：</dd>
+              <dd>
+                <span className="text-2xl">
+                  {charCount.fullWidthSpecialCharLength}
+                </span>
+                文字
+              </dd>
+              <dd className="mt-2">半角英数字：</dd>
+              <dd>
+                <span className="text-2xl">
+                  {charCount.halfWidthAllnumLength}
+                </span>
+                文字
+              </dd>
+              <dd className="pl-3">▻数字</dd>
+              <dd>
+                <span className="text-2xl">{charCount.numLength}</span>文字
+              </dd>
+              <dd className="mt-2">特殊文字：</dd>
+              <dd>
+                <span className="text-2xl">{charCount.specialCharLength}</span>
+                文字
+              </dd>
+              <dd className="pl-3">▻全角特殊文字：</dd>
+              <dd>
+                <span className="text-2xl">
+                  {charCount.fullWidthSpecialCharLength}
+                </span>
+                文字
+              </dd>
+            </dl>
           </div>
         </div>
       </section>

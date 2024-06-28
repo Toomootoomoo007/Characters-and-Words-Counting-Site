@@ -13,6 +13,13 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      gridTemplateColumns: {
+        // 16列まで増やす
+        "16": "repeat(16, minmax(0, 1fr))",
+      },
+      gridTemplateRows: {
+        "minmax-100-auto": "minmax(100px, auto)",
+      },
     },
   },
   plugins: [],
