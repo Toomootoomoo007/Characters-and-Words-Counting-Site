@@ -22,21 +22,21 @@ export default function Home() {
 
   return (
     <main>
-      <section className="min-h-screen p-7">
-        <h1 className="text-3xl">文字／単語カウント</h1>
-        <form action="/" className="p-5">
+      <section className="min-h-screen p-5 mx-auto w-full">
+        <h1 className="text-3xl">文字・単語カウント</h1>
+        <form action="/" className="mt-4">
           <textarea
             id="textarea"
-            className="w-4/5 p-3 text-xl bg-slate-500 text-neutral-50"
+            className="block w-full p-3 text-xl bg-slate-500 text-neutral-50"
             rows={10}
             onChange={counting}
             placeholder={initialLetters}
           />
-          <div className="flex gap-2">
+          <div className="flex gap-5 mt-4">
             <input
               type="reset"
               value={"リセット"}
-              className="inline-block text-xl px-4 py-2 cursor-pointer bg-blue-900 text-neutral-200 rounded-md"
+              className="inline-block text-xl px-4 py-2 cursor-pointer bg-gray-600 text-neutral-200 rounded-md"
               onClick={() => {
                 setCharCount(countFuncs(initialLetters));
               }}
@@ -50,30 +50,40 @@ export default function Home() {
             </button>
           </div>
         </form>
-        <p className="text-xl">
-          {charCount.allLength}文字（スペース・改行・その他特殊文字含む）
-        </p>
-        <p className="text-xl">
-          {charCount.noSpacesLength}文字（スペース・改行含まない）
-        </p>
-        <p className="text-xl">
-          半角英数字の文字数：{charCount.halfWidthAllnumLength}文字（内、数字
-          {charCount.numLength}文字）
-        </p>
-        <p className="text-xl">
-          特殊文字の文字数：{charCount.specialCharLength}文字
-        </p>
-        <p className="text-xl">
-          半角英数字の単語数：{charCount.halfWidthAlnumWords}
-          単語（内、数字の単語数は
-          {charCount.numberWords}単語）
-        </p>
-        <p className="text-xl">
-          全角文字と半角カタカナ：{charCount.fullWidthLength}
-          文字(内、半角カタカナ：{charCount.halfWidthKanaLength}文字、全角数字：
-          {charCount.fullWidthDigitsLength}文字、全角特殊文字：
-          {charCount.fullWidthSpecialCharLength}文字)
-        </p>
+        <div className="mt-6">
+          <p className="mt-2">
+            半角英数字の単語数：{charCount.halfWidthAlnumWords}
+            単語（内、数字の単語数は
+            {charCount.numberWords}単語）
+          </p>
+
+          <div className="mt-2">
+            <h2 className="text-xl font-bold">文字数</h2>
+            <p className="mt-2">全文字数：{charCount.allLength}文字</p>
+            <p className="mt-2">
+              スペース・改行を除く：{charCount.noSpacesLength}文字
+            </p>
+            <p className="mt-2">
+              全角文字と半角カタカナのみ：{charCount.fullWidthLength}文字
+              <br />
+              ▻半角カタカナ：{charCount.halfWidthKanaLength}文字
+              <br />
+              ▻全角数字：{charCount.fullWidthDigitsLength}文字
+              <br />
+              ▻全角特殊文字：{charCount.fullWidthSpecialCharLength}文字
+            </p>
+            <p className="mt-2">
+              半角英数字：{charCount.halfWidthAllnumLength}文字
+              <br />
+              ▻数字{charCount.numLength}文字）
+            </p>
+            <p className="mt-2">
+              特殊文字：{charCount.specialCharLength}文字
+              <br />
+              ▻全角特殊文字：{charCount.fullWidthSpecialCharLength}文字
+            </p>
+          </div>
+        </div>
       </section>
     </main>
   );
