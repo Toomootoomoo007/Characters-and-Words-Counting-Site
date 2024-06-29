@@ -1,15 +1,15 @@
 type CountingsObj = {
+  words: number;
+  digitWords: number;
   allLength: number;
-  noSpacesLength: number;
-  fullWidthLength: number;
-  halfWidthKanaLength: number;
-  fullAndHalfKanaLength: number;
-  halfWidthAllnumLength: number;
-  numLength: number;
-  fullWidthDigitsLength: number;
-  fullWidthAlphaLength: number;
-  halfWidthAlnumWords: number;
-  numberWords: number;
-  specialCharLength: number;
-  fullWidthSpecialCharLength: number;
+  withoutSpacesBreaks: number;
+  fullWidth: number;
+  fullWidthAlphabet: number;
+  fullWidthDigits: number;
+  fullWidthSymbol: number;
+  halfWidthKana: number;
+  halfWidthCharas: number;
+  halfWidthDigits: number;
+  halfSymbols: number;
+  emojis: number;
 };

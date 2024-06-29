@@ -1,56 +1,116 @@
 import "@/libs/types";
+import emojiRegex from "emoji-regex";
+
 export const countFuncs = (text: string): CountingsObj => {
   const count = {} as CountingsObj;
 
-  //生の長さ
-  count.allLength = text.length;
+  const countEnglishWords = (text: string) => {
+    const englishWords = text.match(/\b[a-zA-Z]+\b/g) || [];
+    return englishWords.length;
+  };
+  const words = countEnglishWords(text);
 
-  // スペースや改行を削除
-  count.noSpacesLength = text.replace(/\s/g, "").length;
+  const countNumberWords = (text: string) => {
+    const numberWords = text.match(/\b\d+\b/g) || [];
+    return numberWords.length;
+  };
+  const digitWords = countNumberWords(text);
 
-  // 全角文字数
-  count.fullWidthLength = (text.match(/[^\x00-\x7F]/g) || []).length;
+  const segmenter = new Intl.Segmenter("jp-JP", {
+    granularity: "grapheme",
+  });
+  const segmentTexts = [...segmenter.segment(text)];
 
-  // 半角カタカナ文字数
-  count.halfWidthKanaLength = (text.match(/[\uFF61-\uFF9F]/g) || []).length;
+  const textArry: string[] = [];
+  segmentTexts.map((text) => {
+    textArry.push(text.segment);
+  });
 
-  //全角文字数と半角カタカナ文字数
-  count.fullAndHalfKanaLength =
-    count.fullWidthLength + count.halfWidthKanaLength;
+  //テキスト配列から空白と改行を除外
+  const removeSpaceAndBreaks = (arr: string[]) => {
+    return arr.filter((char) => char !== " " && char !== "\n" && char !== "　");
+  };
+  const textArryNoSpacesBreaks = removeSpaceAndBreaks(textArry); //スペースと改行を除いた文字配列
 
-  // 半角英数字文字数
-  count.halfWidthAllnumLength = (text.match(/[a-zA-Z0-9]/g) || []).length;
+  //テキスト配列から全角文字列（異体字含む）を抜き出し
+  const fullWidthCharactersArry = (arr: string[]) => {
+    return arr.filter((char) => /[^\u0020-\u007E\uFF61-\uFF9F]/u.test(char));
+  };
+  const textArryFullWidth = fullWidthCharactersArry(textArryNoSpacesBreaks);
 
-  // 半角英数字の単語数
-  count.halfWidthAlnumWords = (text.match(/\b[a-zA-Z0-9]+\b/g) || []).length;
+  //全角数字を抜き出し
+  const filterFullWidthDigits = (arr: string[]) => {
+    return arr.filter((char) => /[\uFF10-\uFF19]/.test(char));
+  };
+  const fullWidthDigits = filterFullWidthDigits(textArryNoSpacesBreaks);
 
-  //半角数字数
-  count.numLength = (text.match(/[0-9]/g) || []).length;
+  //テキスト配列から半角カタカナを抜き出し
+  const filterHalfWidthKana = (arr: string[]) => {
+    return arr.filter((char) => /[\uFF61-\uFF9F]/.test(char));
+  };
+  const textArryHalfKatakana = filterHalfWidthKana(textArryNoSpacesBreaks);
 
-  // 全角数字文字数
-  count.fullWidthDigitsLength = (text.match(/[\uFF10-\uFF19]/g) || []).length;
+  //テキスト配列から全角の英アルファベットを抜き出し
+  const fullWidthAlphaChars = (arr: string[]) => {
+    return arr.filter((char) => /[\uFF21-\uFF3A\uFF41-\uFF5A]/.test(char));
+  };
+  const textArryFullAlphaChars = fullWidthAlphaChars(textArryNoSpacesBreaks);
 
-  // 全角英語文字数
-  count.fullWidthAlphaLength = (
-    text.match(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g) || []
-  ).length;
+  //テキスト配列から全角の記号を抜き出し
+  const fullWidthSymbolChars = (arr: string[]) => {
+    return arr.filter((char) =>
+      /[！＃＄％＆＊＋－：；＜＝＞？＠［＼］＾＿｀｛｜｝～、。〃〄々〆〇〈〉《》「」『』【】〒〓〘〙〚〛〜〝〟〠〡〢〣〤〥〦〧〨〩〪〭〮〯〫〬〰〱〲〳〴〵〶〷〸〹〺〻〼〽〾〿\u3000-\u303F\uFF00-\uFFEF\u2190-\u21FF\u2200-\u22FF\uF8FF]/u.test(
+        char
+      )
+    );
+  };
+  const textArryFullSymbol = fullWidthSymbolChars(textArryNoSpacesBreaks);
 
-  // 数字の単語数
-  count.numberWords = (text.match(/\b\d+\b/g) || []).length;
+  //半角英数字
+  const filterHalfWidthAlphanumeric = (arr: string[]) => {
+    return arr.filter((char) => /[a-zA-Z0-9]/.test(char));
+  };
+  const halfWidthAlphaNumeric = filterHalfWidthAlphanumeric(
+    textArryNoSpacesBreaks
+  );
 
-  //特殊文字の数
-  count.specialCharLength = (
-    text.match(
-      /[^a-zA-Z0-9\s\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF10-\uFF19]/g
-    ) || []
-  ).length;
+  //半角数字
+  const filterHalfWidthDigits = (arr: string[]) => {
+    return arr.filter((char) => /[0-9]/.test(char));
+  };
+  const halfWidthDigitsArray = filterHalfWidthDigits(textArryNoSpacesBreaks);
 
-  // 全角特殊文字の数（英数字、ひらがな、カタカナ、漢字、数字を除く）
-  count.fullWidthSpecialCharLength = (
-    text.match(
-      /[^\x00-\x7F\uFF10-\uFF19\uFF21-\uFF3A\uFF41-\uFF5A\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/g
-    ) || []
-  ).length;
+  //半角の特殊記号を抜き出し
+  const halfWidthSymbolChars = (arr: string[]) => {
+    return arr.filter((char) =>
+      /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~¥]/.test(char)
+    );
+  };
+  const textArryHalfSymbol = halfWidthSymbolChars(textArryNoSpacesBreaks);
+
+  //絵文字の抜き出し
+  const extractEmojis = (arr: string[]) => {
+    return arr.filter((char) =>
+      /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/u.test(
+        char
+      )
+    );
+  };
+
+  const emojiArray = extractEmojis(textArryNoSpacesBreaks);
+  count.words = words;
+  count.digitWords = digitWords;
+  count.allLength = textArry.length; //生の文字列
+  count.withoutSpacesBreaks = textArryNoSpacesBreaks.length; //スペースと除外
+  count.fullWidth = textArryFullWidth.length; //全角すべて
+  count.fullWidthAlphabet = textArryFullAlphaChars.length; //全角アルファベット
+  count.fullWidthDigits = fullWidthDigits.length; //全角数字
+  count.fullWidthSymbol = textArryFullSymbol.length; //全角特殊記号
+  count.halfWidthKana = textArryHalfKatakana.length; //半角カタカナ
+  count.halfWidthCharas = halfWidthAlphaNumeric.length; //半角英数字
+  count.halfWidthDigits = halfWidthDigitsArray.length; //半角数字
+  count.halfSymbols = textArryHalfSymbol.length; //半角特殊記号
+  count.emojis = emojiArray.length; //絵文字
 
   return count;
 };

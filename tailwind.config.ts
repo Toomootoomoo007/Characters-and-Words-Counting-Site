@@ -20,6 +20,11 @@ const config: Config = {
       gridTemplateRows: {
         "minmax-100-auto": "minmax(100px, auto)",
       },
+      spacing: {
+        "128": "32rem",
+        "256": "64rem",
+        "512": "128rem",
+      },
     },
   },
   plugins: [],
