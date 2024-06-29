@@ -1,12 +1,12 @@
 import "@/libs/types";
 import emojiRegex from "emoji-regex";
 
-export const countFuncs = (text: string): CountingsObj => {
+export const countFuncs = (text: string): any => {
   const count = {} as CountingsObj;
 
   const countEnglishWords = (text: string) => {
-    const englishWords = text.match(/\b[a-zA-Z]+\b/g) || [];
-    return englishWords.length;
+    const latinWords = text.match(/\b[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ’'-]+\b/g) || [];
+    return latinWords.length;
   };
   const words = countEnglishWords(text);
 
@@ -33,10 +33,18 @@ export const countFuncs = (text: string): CountingsObj => {
   const textArryNoSpacesBreaks = removeSpaceAndBreaks(textArry); //スペースと改行を除いた文字配列
 
   //テキスト配列から全角文字列（異体字含む）を抜き出し
-  const fullWidthCharactersArry = (arr: string[]) => {
-    return arr.filter((char) => /[^\u0020-\u007E\uFF61-\uFF9F]/u.test(char));
+
+  const emojiRegexStr = emojiRegex();
+
+  const fullWidthCharactersArray = (arr: string[]) => {
+    return arr.filter(
+      (char) =>
+        /[^\u0020-\u007E\uFF61-\uFF9F]/u.test(char) &&
+        !/[a-zA-Z\u00C0-\u00FF\u0100-\u017F\u0180-\u024F]/.test(char) &&
+        !emojiRegexStr.test(char)
+    );
   };
-  const textArryFullWidth = fullWidthCharactersArry(textArryNoSpacesBreaks);
+  const textArryFullWidth = fullWidthCharactersArray(textArryNoSpacesBreaks);
 
   //全角数字を抜き出し
   const filterFullWidthDigits = (arr: string[]) => {
@@ -67,12 +75,12 @@ export const countFuncs = (text: string): CountingsObj => {
   const textArryFullSymbol = fullWidthSymbolChars(textArryNoSpacesBreaks);
 
   //半角英数字
-  const filterHalfWidthAlphanumeric = (arr: string[]) => {
-    return arr.filter((char) => /[a-zA-Z0-9]/.test(char));
+  const filterLatinAlphanumeric = (arr: string[]) => {
+    return arr.filter((char) =>
+      /[a-zA-Z0-9\u00C0-\u00FF\u0100-\u017F\u0180-\u024F]/.test(char)
+    );
   };
-  const halfWidthAlphaNumeric = filterHalfWidthAlphanumeric(
-    textArryNoSpacesBreaks
-  );
+  const halfWidthAlphaNumeric = filterLatinAlphanumeric(textArryNoSpacesBreaks);
 
   //半角数字
   const filterHalfWidthDigits = (arr: string[]) => {
@@ -80,7 +88,7 @@ export const countFuncs = (text: string): CountingsObj => {
   };
   const halfWidthDigitsArray = filterHalfWidthDigits(textArryNoSpacesBreaks);
 
-  //半角の特殊記号を抜き出し
+  //半角記号を抜き出し
   const halfWidthSymbolChars = (arr: string[]) => {
     return arr.filter((char) =>
       /[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~¥]/.test(char)
@@ -105,7 +113,7 @@ export const countFuncs = (text: string): CountingsObj => {
   count.fullWidth = textArryFullWidth.length; //全角すべて
   count.fullWidthAlphabet = textArryFullAlphaChars.length; //全角アルファベット
   count.fullWidthDigits = fullWidthDigits.length; //全角数字
-  count.fullWidthSymbol = textArryFullSymbol.length; //全角特殊記号
+  count.fullWidthSymbol = textArryFullSymbol.length; //全角記号
   count.halfWidthKana = textArryHalfKatakana.length; //半角カタカナ
   count.halfWidthCharas = halfWidthAlphaNumeric.length; //半角英数字
   count.halfWidthDigits = halfWidthDigitsArray.length; //半角数字

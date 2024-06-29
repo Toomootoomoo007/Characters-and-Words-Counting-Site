@@ -3,7 +3,7 @@ import { countFuncs } from "@/libs/countFuncs";
 import { useState } from "react";
 
 const initialLetters =
-  "ここに「文字」を入れたら、カウントするよ🧜‍♀️ Type here, then I'll count them all🥷 Escriba aquí, y los contaré👩🏻‍💻";
+  "ここに「文字」を入れたら、カウントするよ🧜‍♀️ Type here, then I'll count them all! Escriba aquí, y los contaré👩🏻‍💻";
 
 export default function Home() {
   const [charCount, setCharCount] = useState(countFuncs(initialLetters));
@@ -26,11 +26,11 @@ export default function Home() {
     <main>
       <section className="min-h-screen p-5 mx-auto w-full">
         <h1 className="text-3xl">文字・単語カウント</h1>
-        <div className="flex flex-wrap">
-          <form action="/" className="mt-4 min-w-128 shrink-0 grow">
+        <div className="flex flex-wrap gap-16 mt-10 justify-center">
+          <form action="/" className="block w-128">
             <textarea
               id="textarea"
-              className="block w-full p-3 text-xl bg-slate-500 text-neutral-50"
+              className="block w-full p-3 text-base bg-slate-500 text-neutral-50"
               rows={10}
               onChange={counting}
               placeholder={initialLetters}
@@ -53,21 +53,22 @@ export default function Home() {
               </button>
             </div>
           </form>
-          <div className="mt-6 min-w-96">
-            <dl className="mt-2 grid md:grid-cols-[1fr_3fr] grid-cols-2 gap-y-3">
-              <dt>半角英数字の単語数</dt>
+          <div className="w-96">
+            <dl className="grid grid-cols-2 gap-y-3">
+              <dt className="text-xl font-bold">単語数</dt>
               <dd>
                 <span className="text-2xl">{charCount.words}</span>
-                単語（内、数字の単語数は
-                {charCount.digitWords}単語）
+                単語
+                <br />
+                *内、数字の単語は{charCount.digitWords}単語
               </dd>
             </dl>
 
             <div className="mt-2">
-              <dl className="grid md:grid-cols-[1fr_3fr] grid-cols-2 gap-y-3 ">
+              <dl className="grid grid-cols-2 gap-y-3 ">
                 <dt className="text-xl font-bold col-span-2">
-                  文字数{" "}
-                  <small className="text-sm">
+                  文字数
+                  <small className="text-sm pl-2">
                     *絵文字は1文字としてカウントされます。
                   </small>
                 </dt>
@@ -75,7 +76,11 @@ export default function Home() {
                 <dd>
                   <span className="text-2xl">{charCount.allLength}</span>文字
                 </dd>
-                <dd className="mt-2">スペース・改行を除く</dd>
+                <dd className="mt-2">
+                  全文字数
+                  <br />
+                  *スペース・改行を除く
+                </dd>
                 <dd>
                   <span className="text-2xl">
                     {charCount.withoutSpacesBreaks}
@@ -84,24 +89,19 @@ export default function Home() {
                 </dd>
                 <dd className="mt-2">全角文字</dd>
                 <dd>
-                  <span className="text-2xl">{charCount.fullWidth}</span>
+                  <span className="text-2xl">
+                    {charCount.fullWidth - charCount.fullWidthSymbol}
+                  </span>
                   文字
                 </dd>
                 <dd className="pl-3">▻全角数字</dd>
                 <dd>
-                  <span className="text-2xl">{charCount.fullWidthDigits}</span>
+                  <span className="pl-2">{charCount.fullWidthDigits}</span>
                   文字
                 </dd>
-                <dd className="pl-3">▻全角英語アルファベット</dd>
+                <dd className="pl-3">▻全角ＡＢＣ</dd>
                 <dd>
-                  <span className="text-2xl">
-                    {charCount.fullWidthAlphabet}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3">▻全角記号</dd>
-                <dd>
-                  <span className="text-2xl">{charCount.fullWidthSymbol}</span>
+                  <span className="pl-2">{charCount.fullWidthAlphabet}</span>
                   文字
                 </dd>
                 <dd className="mt-2">半角カタカナ</dd>
@@ -116,7 +116,7 @@ export default function Home() {
                 </dd>
                 <dd className="pl-3">▻半角数字</dd>
                 <dd>
-                  <span className="text-2xl">{charCount.halfWidthDigits}</span>
+                  <span className="pl-2">{charCount.halfWidthDigits}</span>
                   文字
                 </dd>
                 <dd className="mt-2">記号</dd>
@@ -128,12 +128,12 @@ export default function Home() {
                 </dd>
                 <dd className="pl-3">▻半角記号</dd>
                 <dd>
-                  <span className="text-2xl">{charCount.halfSymbols}</span>
+                  <span className="pl-2">{charCount.halfSymbols}</span>
                   文字
                 </dd>
                 <dd className="pl-3">▻全角記号</dd>
                 <dd>
-                  <span className="text-2xl">{charCount.fullWidthSymbol}</span>
+                  <span className="pl-2">{charCount.fullWidthSymbol}</span>
                   文字
                 </dd>
                 <dd className="mt-3">絵文字</dd>
