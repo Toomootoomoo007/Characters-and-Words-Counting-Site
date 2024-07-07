@@ -212,7 +212,7 @@ export default function Home() {
                     全角ＡＢＣを消す
                   </button>
                 </dd>
-                <dd className="pl-3">▻句読点"、 。"</dd>
+                <dd className="pl-3">▻句読点（、 。）</dd>
                 <dd>
                   <span className="pl-2">{charCount.fullDots}</span>
                   文字
