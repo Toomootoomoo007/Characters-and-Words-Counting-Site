@@ -6,6 +6,7 @@ type CountingsObj = {
   fullWidth: number;
   fullWidthAlphabet: number;
   fullWidthDigits: number;
+  fullDots: number;
   fullWidthSymbol: number;
   halfWidthKana: number;
   halfWidthCharas: number;
