@@ -15,6 +15,7 @@ import {
   deleteSymbolArray,
   fullWidthCharactersArray,
   latinWordsArray,
+  makeTextArray,
   removeSpaceAndBreaksArray,
 } from "@/libs/countFuncs";
 import { useRef, useState } from "react";
@@ -24,6 +25,7 @@ const initialLetters =
 
 export default function Home() {
   const [charCount, setCharCount] = useState(countFuncs(initialLetters));
+  const [chars, setChars] = useState("");
   const textareaEle = useRef<HTMLTextAreaElement>(null);
   const btnStyle =
     "text-sm bg-blue-950 text-neutral-100 rounded-sm cursor-pointer py-2 px-4 min-w-44";
@@ -124,6 +126,18 @@ export default function Home() {
     const text = textareaEle.current!.value;
     const latinWords = text ? latinWordsArray(text).join(" ") : "";
     textareaEle.current!.value = latinWords;
+    setCharCount(countFuncs(textareaEle.current!.value));
+  };
+  const deleteChars = (e: any) => {
+    e.preventDefault();
+    const text = textareaEle.current!.value;
+    const textArray = makeTextArray(text);
+    const charsArray = chars.split("");
+    const deleteCharsArray = (arr: string[]) => {
+      return arr.filter((char) => !charsArray.includes(char));
+    };
+    const deletedChars = text ? deleteCharsArray(textArray).join("") : "";
+    textareaEle.current!.value = deletedChars;
     setCharCount(countFuncs(textareaEle.current!.value));
   };
 
@@ -329,10 +343,21 @@ export default function Home() {
                   指定した文字を消す
                 </dt>
                 <dd>
-                  <input
-                    type="text"
-                    className="block w-full p-3 text-base bg-slate-500 text-neutral-50"
-                  />
+                  <form action="">
+                    <input
+                      type="text"
+                      className="block w-full p-3 text-base bg-slate-500 text-neutral-50"
+                      onChange={(e) => {
+                        setChars(e.target.value);
+                      }}
+                    />
+                    <input
+                      type="submit"
+                      value={"指定した文字を消す"}
+                      onClick={deleteChars}
+                      className={btnStyle}
+                    />
+                  </form>
                 </dd>
               </dl>
             </div>
