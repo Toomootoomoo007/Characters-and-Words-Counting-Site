@@ -13,4 +13,7 @@ type CountingsObj = {
   halfWidthDigits: number;
   halfSymbols: number;
   emojis: number;
+  fullJap: number;
+  halfAll: number;
+  puncts: number;
 };

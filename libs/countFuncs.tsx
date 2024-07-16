@@ -119,6 +119,26 @@ export const deleteEmojiArray = (text: string) => {
   };
   return extractEmojis(textArray);
 };
+export const deleteJapArray = (text: string) => {
+  const textArray = makeTextArray(text);
+  const extractJaps = (arr: string[]) => {
+    return arr.filter(
+      (char) =>
+        !/^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3400-\u4DBF\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}]$/u.test(
+          char
+        )
+    );
+  };
+  return extractJaps(textArray);
+};
+
+export const deletePunctuationsArray = (text: string) => {
+  const textArray = makeTextArray(text);
+  const extractPuncts = (arr: string[]) => {
+    return arr.filter((char) => !/[.,:;]/.test(char));
+  };
+  return extractPuncts(textArray);
+};
 
 export const deleteFullWidthSymbolArray = (text: string) => {
   const textArray = makeTextArray(text);
@@ -155,9 +175,7 @@ export const countFuncs = (text: string): any => {
   const textArryNoSpacesBreaks = removeSpaceAndBreaksArray(text);
 
   //テキスト配列から全角文字列（異体字含む）を抜き出し
-
   const emojiRegexStr = emojiRegex();
-
   const fullWidthCharactersArray = (arr: string[]) => {
     return arr.filter(
       (char) =>
@@ -167,6 +185,16 @@ export const countFuncs = (text: string): any => {
     );
   };
   const textArryFullWidth = fullWidthCharactersArray(textArryNoSpacesBreaks);
+
+  //テキスト配列から漢字／かな／カタ（異体字含む）を抜き出し
+  const fullWidthJapArray = (arr: string[]) => {
+    return arr.filter((char) =>
+      /^[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\u3400-\u4DBF\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}]$/u.test(
+        char
+      )
+    );
+  };
+  const textArryFullJap = fullWidthJapArray(textArryNoSpacesBreaks);
 
   //全角数字を抜き出し
   const filterFullWidthDigits = (arr: string[]) => {
@@ -224,6 +252,12 @@ export const countFuncs = (text: string): any => {
   };
   const textArryHalfSymbol = halfWidthSymbolChars(textArryNoSpacesBreaks);
 
+  //ピリオドなどを抜き出し
+  const extractPunctuation = (arr: string[]) => {
+    return arr.filter((char) => /[.,:;]/.test(char));
+  };
+  const textArryPunctuations = extractPunctuation(textArryNoSpacesBreaks);
+
   //絵文字の抜き出し
   const extractEmojis = (arr: string[]) => {
     return arr.filter((char) =>
@@ -248,6 +282,12 @@ export const countFuncs = (text: string): any => {
   count.halfWidthDigits = halfWidthDigitsArray.length; //半角数字
   count.halfSymbols = textArryHalfSymbol.length; //半角特殊記号
   count.emojis = emojiArray.length; //絵文字
-
+  count.fullJap = textArryFullJap.length; //漢字・かな・カタ
+  count.puncts = textArryPunctuations.length;
+  count.halfAll =
+    textArryHalfKatakana.length +
+    halfWidthAlphaNumeric.length +
+    halfWidthDigitsArray.length +
+    textArryHalfSymbol.length;
   return count;
 };
