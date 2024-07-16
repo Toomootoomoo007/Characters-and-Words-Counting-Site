@@ -28,7 +28,7 @@ export default function Home() {
   const [chars, setChars] = useState("");
   const textareaEle = useRef<HTMLTextAreaElement>(null);
   const btnStyle =
-    "text-sm bg-blue-950 text-neutral-100 rounded-sm cursor-pointer py-2 px-4 min-w-44";
+    "text-xs bg-blue-950 text-neutral-100 rounded-sm cursor-pointer py-2 px-4 w-28 text-left sm:min-w-44 sm:text-sm";
 
   const countResultStyle = "max-w-24 text-right";
 
@@ -339,27 +339,25 @@ export default function Home() {
                     絵文字を消す
                   </button>
                 </dd>
-                <dt className="text-xl font-bold col-span-3 border-b-2 border-y-indigo-950">
-                  指定した文字を消す
-                </dt>
-                <dd>
-                  <form action="">
-                    <input
-                      type="text"
-                      className="block w-full p-3 text-base bg-slate-500 text-neutral-50"
-                      onChange={(e) => {
-                        setChars(e.target.value);
-                      }}
-                    />
-                    <input
-                      type="submit"
-                      value={"指定した文字を消す"}
-                      onClick={deleteChars}
-                      className={btnStyle}
-                    />
-                  </form>
-                </dd>
               </dl>
+              <p className="text-xl font-bold border-b-2 border-y-indigo-950">
+                指定した文字を消す
+              </p>
+              <form action="" className="w-full flex gap-2 flex-wrap mt-2">
+                <input
+                  type="text"
+                  className="block w-3/5 p-3 text-base bg-slate-500 text-neutral-50"
+                  onChange={(e) => {
+                    setChars(e.target.value);
+                  }}
+                />
+                <input
+                  type="submit"
+                  value={"指定した文字を消す"}
+                  onClick={deleteChars}
+                  className={btnStyle}
+                />
+              </form>
             </div>
           </div>
         </div>
