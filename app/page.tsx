@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { useTextManipulation } from "@/hooks/useTextManipulation";
 import { makeTextArray } from "@/libs/countFuncs";
@@ -12,8 +12,8 @@ export default function Home() {
 
   const {
     text,
-    charCount,
     setText,
+    charCount,
     clearTexts,
     deleteSpacesBreaks,
     deleteEmojis,
@@ -27,17 +27,27 @@ export default function Home() {
     deleteHalfKata,
     deleteJapChars,
     deleteHalfSymbol,
-    deleteSymbol,
     deletePunctuations,
   } = useTextManipulation(initialLetters);
 
   //debounceで300ms待ってから、カウントの関数を実行。
-  const handleTextChange = debounce(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setText(event.target.value);
-    },
-    300
+  const debouncedUpdateCount = useCallback(
+    debounce((newText: string) => {
+      setText(newText);
+    }, 300),
+    []
   );
+
+  useEffect(() => {
+    return () => {
+      debouncedUpdateCount.cancel();
+    };
+  }, [debouncedUpdateCount]);
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(event.target.value);
+    debouncedUpdateCount(event.target.value);
+  };
 
   // クラスリスト
   const btnStyle =
