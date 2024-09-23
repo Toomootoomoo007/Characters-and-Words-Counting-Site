@@ -18,7 +18,7 @@ import {
 } from "@/libs/countFuncs";
 
 export const useTextManipulation = (initialText: string) => {
-  const [text, setText] = useState(initialText);
+  const [text, setText] = useState(() => initialText);
   const charCount = useMemo(() => countFuncs(text), [text]);
 
   const updateText = useCallback((newText: string) => {
@@ -29,68 +29,68 @@ export const useTextManipulation = (initialText: string) => {
     (arrayFunc: (text: string) => string[]) => {
       updateText(arrayFunc(text).join(""));
     },
-    []
+    [text, updateText]
   );
 
   const clearTexts = useCallback(() => {
     updateText("");
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteSpacesBreaks = useCallback(() => {
     updateWithArray(removeSpaceAndBreaksArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteFullWidthChars = useCallback(() => {
     updateWithArray(fullWidthCharactersArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteFullWidthNum = useCallback(() => {
     updateWithArray(deleteFullWidthNumArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteFullLatinChars = useCallback(() => {
     updateWithArray(deleteFullWidthLatinCharsArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteJapDots = useCallback(() => {
     updateWithArray(deleteJapDotsArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteHalfKata = useCallback(() => {
     updateWithArray(deleteHalfKataArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteHalfNum = useCallback(() => {
     updateWithArray(deleteHalfNumArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteHalfAlphaNum = useCallback(() => {
     updateWithArray(deleteHalfAlphaNumArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteSymbol = useCallback(() => {
     updateWithArray(deleteSymbolArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteFullWidthSymbol = useCallback(() => {
     updateWithArray(deleteFullWidthSymbolArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteHalfSymbol = useCallback(() => {
     updateWithArray(deleteHalfSymbolArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteEmojis = useCallback(() => {
     updateWithArray(deleteEmojiArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deleteJapChars = useCallback(() => {
     updateWithArray(deleteJapArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   const deletePunctuations = useCallback(() => {
     updateWithArray(deletePunctuationsArray);
-  }, [updateText]);
+  }, [text, updateText]);
 
   return {
     text,

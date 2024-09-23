@@ -6,25 +6,10 @@ export const makeTextArray = (text: string): string[] => {
   const segmenter = new Intl.Segmenter("jp-JP", {
     granularity: "grapheme",
   });
-  const segmentTexts = [...segmenter.segment(text)];
-
-  const textArry: string[] = [];
-  segmentTexts.map((text) => {
-    textArry.push(text.segment);
-  });
-  return textArry;
+  return [...segmenter.segment(text)].map((segment) => segment.segment);
 };
 
-export const latinWordsArray = (text: string) =>
-  text.match(/\b[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ’'-]+\b/g) || [];
-
-export const removeSpaceAndBreaksArray = (text: string) => {
-  const textArray = makeTextArray(text);
-  return textArray.filter(
-    (char) => char !== " " && char !== "\n" && char !== "　"
-  );
-};
-
+// 全角文字
 export const fullWidthCharactersArray = (text: string) => {
   const textArray = makeTextArray(text);
   return textArray.filter(
@@ -36,7 +21,6 @@ export const fullWidthCharactersArray = (text: string) => {
       !emojiRegexStr.test(char)
   );
 };
-
 export const deleteFullWidthNumArray = (text: string) => {
   const textArray = makeTextArray(text);
   const filterFullWidthDigits = (arr: string[]) => {
@@ -44,7 +28,6 @@ export const deleteFullWidthNumArray = (text: string) => {
   };
   return filterFullWidthDigits(textArray);
 };
-
 export const deleteFullWidthLatinCharsArray = (text: string) => {
   const textArray = makeTextArray(text);
   const fullWidthAlphaChars = (arr: string[]) => {
@@ -58,6 +41,30 @@ export const deleteJapDotsArray = (text: string) => {
     return arr.filter((char) => !/[。、]/.test(char));
   };
   return filterFullDots(textArray);
+};
+
+export const deleteFullWidthSymbolArray = (text: string) => {
+  const textArray = makeTextArray(text);
+  const fullWidthSymbolChars = (arr: string[]) => {
+    return arr.filter(
+      (char) =>
+        !/[！＃＄％＆＊＋－：；＜＝＞？＠［＼］＾＿｀｛｜｝～、。〃〄々〆〇・〈〉《》「」『』【】〒〓〘〙〚〛〜〝〟〠〡〢〣〤〥〦〧〨〩〪〭〮〯〫〬〰〱〲〳〴〵〶〷〸〹〺〻〼〽〾〿\u3000-\u303F\u2190-\u21FF\u2200-\u22FF\uF8FF]/u.test(
+          char
+        )
+    );
+  };
+  return fullWidthSymbolChars(textArray);
+};
+
+// 半角
+export const latinWordsArray = (text: string) =>
+  text.match(/\b[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ’'-]+\b/g) || [];
+
+export const removeSpaceAndBreaksArray = (text: string) => {
+  const textArray = makeTextArray(text);
+  return textArray.filter(
+    (char) => char !== " " && char !== "\n" && char !== "　"
+  );
 };
 
 export const deleteHalfKataArray = (text: string) => {
@@ -98,6 +105,7 @@ export const deleteSymbolArray = (text: string) => {
   };
   return fullWidthSymbolChars(textArray);
 };
+
 export const deleteHalfSymbolArray = (text: string) => {
   const textArray = makeTextArray(text);
   const fullWidthSymbolChars = (arr: string[]) => {
@@ -107,6 +115,7 @@ export const deleteHalfSymbolArray = (text: string) => {
   };
   return fullWidthSymbolChars(textArray);
 };
+
 export const deleteEmojiArray = (text: string) => {
   const textArray = makeTextArray(text);
   const extractEmojis = (arr: string[]) => {
@@ -119,6 +128,7 @@ export const deleteEmojiArray = (text: string) => {
   };
   return extractEmojis(textArray);
 };
+
 export const deleteJapArray = (text: string) => {
   const textArray = makeTextArray(text);
   const extractJaps = (arr: string[]) => {
@@ -138,19 +148,6 @@ export const deletePunctuationsArray = (text: string) => {
     return arr.filter((char) => !/[.,:;]/.test(char));
   };
   return extractPuncts(textArray);
-};
-
-export const deleteFullWidthSymbolArray = (text: string) => {
-  const textArray = makeTextArray(text);
-  const fullWidthSymbolChars = (arr: string[]) => {
-    return arr.filter(
-      (char) =>
-        !/[！＃＄％＆＊＋－：；＜＝＞？＠［＼］＾＿｀｛｜｝～、。〃〄々〆〇〈〉《》「」『』【】〒〓〘〙〚〛〜〝〟〠〡〢〣〤〥〦〧〨〩〪〭〮〯〫〬〰〱〲〳〴〵〶〷〸〹〺〻〼〽〾〿\u3000-\u303F\uFF00-\uFFEF\u2190-\u21FF\u2200-\u22FF\uF8FF]/u.test(
-          char
-        )
-    );
-  };
-  return fullWidthSymbolChars(textArray);
 };
 
 export const countFuncs = (text: string): any => {
@@ -222,12 +219,14 @@ export const countFuncs = (text: string): any => {
 
   //テキスト配列から全角の記号を抜き出し
   const fullWidthSymbolChars = (arr: string[]) => {
-    return arr.filter((char) =>
-      /[！＃＄％＆＊＋－：；＜＝＞？＠［＼］＾＿｀｛｜｝～、。〃〄々〆〇〈〉《》「」『』【】〒〓〘〙〚〛〜〝〟〠〡〢〣〤〥〦〧〨〩〪〭〮〯〫〬〰〱〲〳〴〵〶〷〸〹〺〻〼〽〾〿\u3000-\u303F\uFF00-\uFFEF\u2190-\u21FF\u2200-\u22FF\uF8FF]/u.test(
-        char
-      )
+    return arr.filter(
+      (char) =>
+        !/[ぁ-ゟ゠-ヿ㐀-䶵一-龯Ａ-Ｚａ-ｚ０-９a-zA-Z0-9\uFF61-\uFF9F]/u.test(
+          char
+        )
     );
   };
+
   const textArryFullSymbol = fullWidthSymbolChars(textArryNoSpacesBreaks);
 
   //半角英数字
