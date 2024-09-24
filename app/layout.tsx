@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "文字数カウントサイト",
   description:
-    "文字列を入れたら字数、単語数をカウントします。日本語でも英語でもカウントできます。",
+    "文章を入れたら文字数をカウントします。日本語も英語もスペイン語もカウントできます。",
 };
 
 export default function RootLayout({

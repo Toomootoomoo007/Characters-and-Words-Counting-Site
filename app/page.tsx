@@ -21,15 +21,12 @@ import {
 } from "@/libs/charUtils";
 import { regexes } from "@/libs/regexs";
 import DeleteBtn from "@/components/DeleteBtn";
-
-const initialLetters =
-  "ここに「文字」を入れたら、カウントするよ🧜‍♀️ Type here, then I'll count them all! Escriba aquí, y los contaré👩🏻‍💻";
+import DarkMode from "@/components/DarkMode";
 
 export default function Home() {
   const [chars, setChars] = useState<string>(""); //消す文字のインプット管理
 
-  const { text, setText, charCount, clearTexts } =
-    useTextManipulation(initialLetters);
+  const { text, setText, charCount, clearTexts } = useTextManipulation("");
 
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(event.target.value);
@@ -200,7 +197,10 @@ export default function Home() {
   return (
     <main className="m-auto max-w-256 mb-10">
       <section className="min-h-screen p-5 mx-auto w-full">
-        <h1 className="text-3xl">文字カウントアプリ</h1>
+        <div className="flex justify-between">
+          <h1 className="text-3xl">文字カウントアプリ</h1>
+          <DarkMode />
+        </div>
         <div className="mt-10">
           <form action="/" className="block w-full m-auto">
             <label htmlFor="textarea" className="block text-lg">
@@ -330,7 +330,10 @@ export default function Home() {
               {tableData.map((data) => {
                 if (data.type === "title") {
                   return (
-                    <tr className="bg-blue-100" key={data.label}>
+                    <tr
+                      className="bg-blue-100 dark:bg-blue-900"
+                      key={data.label}
+                    >
                       <th colSpan={2} className="p-2 text-left">
                         {data.label}
                       </th>
@@ -339,7 +342,10 @@ export default function Home() {
                 }
                 if (data.type === "data") {
                   return (
-                    <tr className="border-b" key={data.label}>
+                    <tr
+                      className="border-b dark:border-cyan-900"
+                      key={data.label}
+                    >
                       <td className="p-2 pl-4">{data.label}</td>
                       <td className="p-2 pr-4 text-right">
                         <span className="text-2xl font-semibold">
