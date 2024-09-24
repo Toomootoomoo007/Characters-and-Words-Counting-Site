@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import { useTextManipulation } from "@/hooks/useTextManipulation";
-import { makeTextArray } from "@/libs/countFuncs";
+import { makeTextArray } from "@/libs/charCount";
 import Button from "@/components/Button";
 import { countCharsWithFilter, countTextAll } from "@/libs/charCount";
 import {
   combinedAllFilters,
   isCircledNumber,
+  isFullWidthAlphabet,
   isFullWidthDigit,
   isFullWidthJapanese,
   isFullWidthSpace,
@@ -18,6 +19,8 @@ import {
   isPunctuation,
   isSpecialAlphabet,
 } from "@/libs/charUtils";
+import { regexes } from "@/libs/regexs";
+import DeleteBtn from "@/components/DeleteBtn";
 
 const initialLetters =
   "ここに「文字」を入れたら、カウントするよ🧜‍♀️ Type here, then I'll count them all! Escriba aquí, y los contaré👩🏻‍💻";
@@ -57,14 +60,151 @@ export default function Home() {
     setChars("");
   };
 
+  const deleteCharsNew = (regex: RegExp) => {
+    setText((prev) => {
+      const textArray = makeTextArray(prev);
+      const newCharsArray = textArray.filter((char) => !regex.test(char));
+      return newCharsArray.join("");
+    });
+  };
+
+  const deleteBtns = [
+    {
+      label: "改行削除",
+      fn: () => deleteCharsNew(regexes.paragraph),
+    },
+    {
+      label: "スペース削除",
+      fn: () => {
+        deleteCharsNew(regexes.halfWidthSpace);
+        deleteCharsNew(regexes.fullWidthSpace);
+      },
+    },
+    {
+      label: "全角の日本語削除",
+      fn: () => deleteCharsNew(regexes.fullWidthJap),
+    },
+    {
+      label: "半角カタカナ削除",
+      fn: () => deleteCharsNew(regexes.halfWidthKatakana),
+    },
+    {
+      label: "全角句読点削除",
+      fn: () => deleteCharsNew(regexes.punctuation),
+    },
+    {
+      label: "半角ABC削除",
+      fn: () => deleteCharsNew(regexes.halfWidthAlphabet),
+    },
+    {
+      label: "全角ＡＢＣ削除",
+      fn: () => deleteCharsNew(regexes.fullWidthAlphabet),
+    },
+    {
+      label: "特殊ABC削除",
+      fn: () => deleteCharsNew(regexes.specialAlphabet),
+    },
+    {
+      label: "半角数字削除",
+      fn: () => deleteCharsNew(regexes.halfWidthDigit),
+    },
+    {
+      label: "全角数字削除",
+      fn: () => deleteCharsNew(regexes.fullWidthDigit),
+    },
+    {
+      label: "丸囲み数字削除",
+      fn: () => deleteCharsNew(regexes.circledNumber),
+    },
+    {
+      label: "その他記号削除",
+      fn: () => {
+        const textArray = makeTextArray(text);
+        const newTextArray = textArray.filter((char) => {
+          return combinedAllFilters(char);
+        });
+        setText(newTextArray.join(""));
+      },
+    },
+  ];
+  const tableData = [
+    {
+      type: "title",
+      label: "日本語文字",
+    },
+    {
+      type: "data",
+      label: "▻漢字・かな・カタ",
+      countFn: countCharsWithFilter(text, isFullWidthJapanese),
+    },
+    {
+      type: "data",
+      label: "▻半角ｶﾀｶﾅ（半角の句読点等の記号は除く）",
+      countFn: countCharsWithFilter(text, isHalfWidthKatakana),
+    },
+    {
+      type: "data",
+      label: "▻全角の句読点（。や、）",
+      countFn: countCharsWithFilter(text, isPunctuation),
+    },
+    {
+      type: "title",
+      label: "アルファベット",
+    },
+    {
+      type: "data",
+      label: "▻半角ABC字・かな・カタ",
+      countFn: countCharsWithFilter(text, isHalfWidthAlphabet),
+    },
+    {
+      type: "data",
+      label: "▻全角ＡＢＣ",
+      countFn: countCharsWithFilter(text, isFullWidthAlphabet),
+    },
+    {
+      type: "data",
+      label: "▻特殊な半角ABC（í, ñ, etc.）",
+      countFn: countCharsWithFilter(text, isSpecialAlphabet),
+    },
+    {
+      type: "title",
+      label: "数字",
+    },
+    {
+      type: "data",
+      label: "▻半角123",
+      countFn: countCharsWithFilter(text, isHalfWidthDigit),
+    },
+    {
+      type: "data",
+      label: "▻全角１２３",
+      countFn: countCharsWithFilter(text, isFullWidthDigit),
+    },
+    {
+      type: "data",
+      label: "▻丸囲み数字①②③",
+      countFn: countCharsWithFilter(text, isCircledNumber),
+    },
+    {
+      type: "title",
+      label: "上記以外",
+    },
+    {
+      type: "data",
+      label: "▻記号・特殊文字・絵文字",
+      countFn:
+        countTextAll(text) - countCharsWithFilter(text, combinedAllFilters),
+    },
+  ];
+
   return (
-    <main>
+    <main className="m-auto max-w-256 mb-10">
       <section className="min-h-screen p-5 mx-auto w-full">
-        <h1 className="text-3xl">文字・単語カウント</h1>
+        <h1 className="text-3xl">文字カウントアプリ</h1>
         <div className="mt-10">
-          <form action="/" className="block w-full max-w-256 m-auto">
+          <form action="/" className="block w-full m-auto">
             <label htmlFor="textarea" className="block text-lg">
-              カウントしたいテキストを入力してください。
+              テキストを入力したら自動的にカウントされます。
             </label>
             <textarea
               value={text}
@@ -92,150 +232,128 @@ export default function Home() {
               />
             </div>
           </form>
-          <div className=" w-full max-w-256 m-auto">
-            <div className="mt-2">
-              <dl className="grid grid-cols-3 gap-y-3 ">
-                <dt className="text-xl font-bold">単語数</dt>
-                <dd className={`{countResultStyle}`}>{charCount.words}単語</dd>
-                <dd>数字の単語は{charCount.digitWords}単語</dd>
 
-                <dt className="text-xl font-bold">文字数</dt>
-                <dd className={`col-span-2`} aria-live="polite">
-                  <span className="text-2xl">{countTextAll(text)}</span>
-                  文字
-                  <span className="text-xs">
-                    {" "}
-                    *
-                    {`全角スペース${countCharsWithFilter(
-                      text,
-                      isFullWidthSpace
-                    )}、半角スペース${countCharsWithFilter(
-                      text,
-                      isHalfWidthSpace
-                    )}`}
-                    、段落{countCharsWithFilter(text, isParagraph)}を含む
-                  </span>
-                </dd>
-                <dd className={`col-start-2`}>
-                  <span className="text-2xl">
+          {/* ボタンで指定文字削除 */}
+          <div className="mt-8 p-4 bg-slate-300 rounded-md shadow-lg">
+            <p className="text-lg font-medium text-gray-800 mb-4">
+              ボタンで文字を削除
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {deleteBtns.map((deleteBtn) => (
+                <DeleteBtn
+                  key={deleteBtn.label}
+                  label={deleteBtn.label}
+                  className="bg-green-700 hover:bg-green-600 text-white rounded-md px-4 py-2 shadow-md"
+                  onClick={deleteBtn.fn}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* 文字指定削除 */}
+          <form className="mt-10 bg-slate-300 p-6 rounded-md shadow-lg mx-auto">
+            <label
+              htmlFor="chars"
+              className="block text-lg font-medium text-gray-800"
+            >
+              自由に文字指定して削除（下にテキストを入力）
+            </label>
+            <div className="mt-4 flex gap-3 justify-center items-center flex-wrap">
+              <input
+                id="chars"
+                type="text"
+                value={chars}
+                className="block flex-1 p-3 text-base bg-slate-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onChange={(e) => setChars(e.target.value)}
+                placeholder="ここに削除する文字を入力"
+              />
+              <DeleteBtn
+                label="指定した文字を消す"
+                className="bg-green-700 hover:bg-green-600 text-white rounded px-4 py-2 shadow-md"
+                onClick={deleteChars}
+                aria-label="指定した文字を削除"
+              />
+            </div>
+          </form>
+
+          <table className="table-auto text-left w-full max-w-xl mx-auto mt-10 border-collapse">
+            <caption className="text-xl font-bold mb-4">全文字数</caption>
+            <thead className="bg-slate-500 text-white text-lg">
+              <tr className="">
+                <th className="p-2">スペース・段落あり</th>
+                <th className="p-2">スペース・段落なし</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="p-4">
+                  <p>
+                    <span className="text-2xl font-semibold">
+                      {countTextAll(text)}
+                    </span>{" "}
+                    文字
+                  </p>
+                  <div className="text-xs flex gap-2 flex-wrap">
+                    <div>
+                      全角スペース:{" "}
+                      {countCharsWithFilter(text, isFullWidthSpace)}
+                    </div>
+                    <div>
+                      半角スペース:{" "}
+                      {countCharsWithFilter(text, isHalfWidthSpace)}
+                    </div>
+                    <div>段落: {countCharsWithFilter(text, isParagraph)}</div>
+                  </div>
+                </td>
+                <td className="p-4">
+                  <span className="text-2xl font-semibold">
                     {countTextAll(text) -
                       countCharsWithFilter(text, isParagraph) -
                       (countCharsWithFilter(text, isFullWidthSpace) +
                         countCharsWithFilter(text, isHalfWidthSpace))}
-                  </span>
-                  文字<span className="text-xs"> *改行・スペースなし</span>
-                </dd>
+                  </span>{" "}
+                  文字
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-                <dt className="text-xl font-bold col-span-3 border-b-2 border-y-indigo-950">
-                  文字数の内訳
-                </dt>
-                <dd className="mt-2 font-bold col-span-3">日本語文字</dd>
-                <dd className="pl-3">▻漢字・かな・カタ</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="pl-2">
-                    {countCharsWithFilter(text, isFullWidthJapanese)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3">
-                  ▻半角ｶﾀｶﾅ（半角の句読点等の記号は除く）
-                </dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="pl-2">
-                    {countCharsWithFilter(text, isHalfWidthKatakana)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3 mt-2">▻全角の句読点(。や、)</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="">
-                    {countCharsWithFilter(text, isPunctuation)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="mt-2 font-bold col-span-3">アルファベット</dd>
-                <dd className="pl-3 mt-2">▻半角ABC</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="">
-                    {countCharsWithFilter(text, isHalfWidthAlphabet)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3 mt-2">▻特殊な半角ABC（í, ñ, etc.）</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="">
-                    {countCharsWithFilter(text, isSpecialAlphabet)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3">▻全角ＡＢＣ</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="pl-2">{charCount.fullWidthAlphabet}</span>
-                  文字
-                </dd>
-
-                <dd className="mt-2 font-bold col-span-3">数字</dd>
-                <dd className="pl-3 mt-2">▻半角数字</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="">
-                    {countCharsWithFilter(text, isHalfWidthDigit)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3 mt-2">▻全角数字</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="">
-                    {countCharsWithFilter(text, isFullWidthDigit)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="pl-3 mt-2">▻囲み数字</dd>
-                <dd className={` ${countResultStyle}`}>
-                  <span className="">
-                    {countCharsWithFilter(text, isCircledNumber)}
-                  </span>
-                  文字
-                </dd>
-                <dd className="mt-2 font-bold col-span-3">
-                  その他記号 *スペース、段落、句読点を除く
-                </dd>
-
-                <dd className="pl-3 mt-2">▻上記以外の記号や絵文字</dd>
-                <dd className={` ${countResultStyle}`} aria-live="polite">
-                  <span className="text-2xl">
-                    {countTextAll(text) -
-                      countCharsWithFilter(text, combinedAllFilters)}
-                  </span>
-                  文字
-                </dd>
-              </dl>
-              <p className="text-xl font-bold border-b-2 border-y-indigo-950 mt-12">
-                指定した文字を消す
-              </p>
-              <form action="" className="w-full flex gap-2 flex-wrap mt-2">
-                <label htmlFor="chars" className="block text-md">
-                  削除したい文字を入力
-                </label>
-                <input
-                  id="chars"
-                  type="text"
-                  value={chars}
-                  className="block w-3/5 p-3 text-base bg-slate-500 text-neutral-50"
-                  onChange={(e) => {
-                    setChars(e.target.value);
-                  }}
-                  placeholder="ここに消したい文字を入力してください。"
-                />
-                <input
-                  type="submit"
-                  value={"指定した文字を消す"}
-                  onClick={deleteChars}
-                  className={btnStyle}
-                  aria-label="指定した文字を削除"
-                />
-              </form>
-            </div>
-          </div>
+          <table className="table-auto m-auto mt-10 w-full max-w-xl">
+            <caption className="text-xl font-bold mb-4">内訳</caption>
+            <thead className="bg-slate-500 text-white text-lg">
+              <tr>
+                <th className="p-2 text-left">文字種別</th>
+                <th className="p-2 pr-4 text-right">文字数</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableData.map((data) => {
+                if (data.type === "title") {
+                  return (
+                    <tr className="bg-blue-100" key={data.label}>
+                      <th colSpan={2} className="p-2 text-left">
+                        {data.label}
+                      </th>
+                    </tr>
+                  );
+                }
+                if (data.type === "data") {
+                  return (
+                    <tr className="border-b" key={data.label}>
+                      <td className="p-2 pl-4">{data.label}</td>
+                      <td className="p-2 pr-4 text-right">
+                        <span className="text-2xl font-semibold">
+                          {data.countFn}
+                        </span>
+                        文字
+                      </td>
+                    </tr>
+                  );
+                }
+                return null;
+              })}
+            </tbody>
+          </table>
         </div>
       </section>
     </main>

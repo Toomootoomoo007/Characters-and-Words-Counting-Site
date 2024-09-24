@@ -1,4 +1,4 @@
-const makeTextArray = (text: string): string[] => {
+export const makeTextArray = (text: string): string[] => {
   const segmenter = new Intl.Segmenter("jp-JP", {
     granularity: "grapheme",
   });
