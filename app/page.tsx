@@ -153,7 +153,7 @@ export default function Home() {
     },
     {
       type: "data",
-      label: "▻半角ABC字・かな・カタ",
+      label: "▻半角ABC",
       countFn: countCharsWithFilter(text, isHalfWidthAlphabet),
     },
     {
@@ -163,7 +163,7 @@ export default function Home() {
     },
     {
       type: "data",
-      label: "▻特殊な半角ABC（í, ñ, etc.）",
+      label: "▻特殊なABC（é,í,ñ,etc.）",
       countFn: countCharsWithFilter(text, isSpecialAlphabet),
     },
     {
